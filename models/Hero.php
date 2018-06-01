@@ -28,5 +28,26 @@ class Hero extends ActiveRecord
         return [
             [['id', 'name'], 'safe'],
         ];
-    }    
+    }
+    
+    public function beforeSave($insert)
+    {
+        if(parent::beforeSave($insert))
+        {
+            if($this->isNewRecord)
+            {
+                $latestRecord = self::find()->select('max(id) AS id')->one();
+                $latestId = $latestRecord->id;
+                $this->id = $latestId + 1;
+
+                $request = \Yii::$app->request->post();
+                var_dump($request);
+                if(!$this->name){
+                    // $jsonName = json_encode($request[0]);
+                }
+            }
+
+            return parent::beforeSave($insert);
+        }
+    }
 }
